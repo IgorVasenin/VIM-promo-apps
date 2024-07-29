@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Promo</title>
+</head>
+<body>
+    <h1>Промокод</h1>
+    <div id="promoContent">
+        <p>Проверка данных...</p>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            fetch('/check_app_usage', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ app_name: 'VIM_maps.apk', required_time: 20 })
+            })
+            .then(response => response.json())
+            .then(data => {
+                const promoContent = document.getElementById('promoContent');
+                if (data.status === 'success') {
+                    promoContent.innerHTML = `<p>Вы использовали приложение ${data.app_name} в течение ${data.usage_time} часов.</p>
+                                              <p>Ваш промокод: ${data.promocode}</p>`;
+                } else {
+                    promoContent.innerHTML = `<p>${data.message}</p>`;
+                }
+            })
+            .catch(error => {
+                console.error('Ошибка:', error);
+                document.getElementById('promoContent').innerHTML = `<p>Произошла ошибка при проверке данных.</p>`;
+            });
+        });
+    </script>
+</body>
+</html>
